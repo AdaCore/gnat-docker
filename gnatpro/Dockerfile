@@ -5,6 +5,12 @@ ARG gnat_release=gnatpro-20.2-x86_64-linux-bin.tar.gz
 COPY ${gnat_release} /tmp/gnat-src.tar.gz
 COPY default_install /tmp/default_install
 RUN set -xe \
+    && DEBIAN_FRONTEND=noninteractive apt-get update -y \
+    && apt-get install --no-install-recommends -y \
+        gcc \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get purge --auto-remove \
+    && apt-get clean \
     && cd /tmp \
     && mkdir gnat-src \
     && tar -xf gnat-src.tar.gz -C gnat-src/ \
@@ -14,10 +20,7 @@ RUN set -xe \
     && chmod +x default_install \
     && ./default_install
 
-FROM ubuntu:18.04
+FROM gnatpro:deps
 COPY --from=gnatpro-build-install /usr/gnat /usr/gnat
-COPY --from=gnatpro-build-install /usr/bin/make /usr/bin/make
-COPY --from=gnatpro-build-install /usr/lib/ /usr/lib/
-COPY --from=gnatpro-build-install /usr/include/ /usr/include/
 ENV PATH="/usr/gnat/bin:${PATH}"
 ENTRYPOINT ["/bin/bash"]
