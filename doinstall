@@ -9,7 +9,7 @@ ROOTDIR = Path(sys.argv[0]).parent
 def check_call(args):
     args_str = [str(a) for a in args]
     if global_args["verbose"]:
-        print(" ".join(args_str))
+        print("\033[1m >", " ".join(args_str), "\033[0m")
     subprocess.check_call(args_str)
 
 def docker(*args):
@@ -20,14 +20,18 @@ def docker_build(image, directory, **build_args):
     build_arg_opt = []
     for k, v in build_args.items():
         build_arg_opt += ["--build-arg", f"{k}={v}"]
-    docker("build", *build_arg_opt,
-           "-t", image, directory)
+    docker("build", *build_arg_opt, "-t", image, directory)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--gnat_version", default="20.2")
-    ap.add_argument("--gnat_release")
+    ap.add_argument("--verbose", "-v", action="store_true",
+                    help="Display commands as they are run")
+    ap.add_argument("--gnat_version", default="20.2",
+                    help="GNATpro version number for automatic tagging and " +
+                         "archive search.")
+    ap.add_argument("--gnat_release",
+                    help="Release archive file, if not specified, it is infered " +
+                         "from GNATpro version number.")
     global_args = vars(ap.parse_args())
     if not global_args["gnat_release"]:
         global_args["gnat_release"] = \

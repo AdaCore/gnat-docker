@@ -1,7 +1,8 @@
 # Docker GNAT
 
-The docker GNAT contains the Dockerfiles necessary to build a [GNATpro](https://www.adacore.com/gnatpro)
-x86-64 Linux docker image for use in CI or general dockerized context.
+The docker GNAT contains the Dockerfiles necessary to build a x86-64 Linux
+[GNATpro](https://www.adacore.com/gnatpro)  docker image for use in CI or
+general dockerized context.
 
 The repository contains the Dockerfiles necessary to build two images:
 - gnatpro-deps is the basic image has the necessary elements to build the
@@ -25,14 +26,17 @@ For the GNATpro image:
 
 ## Install
 
-Put the content of the GNATpro release as an archive to the current directory.
+Put the content of the GNATpro release as an archive in the `gnatpro/` directory.
 
-The `doinstall` script will guide you through the steps to build the docker gnatpro 
-image.
+Run `./doinstall --gnat-release=<release_file>`
+
+### Known issue
+If you have an access rights error, run the script with sudo
+`sudo python3 doinstall`
 
 ## Manual setup
 
-Manual setup can be needed if you have several images to build.
+Manual setup can be needed for advanced usages.
 
 Run the build and specify the GNATpro archive file name:
 `docker build --build-arg gnat_release=<release_archive_file> [-t <image_name>]`
