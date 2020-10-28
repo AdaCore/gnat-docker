@@ -1,0 +1,55 @@
+# Docker GNAT
+
+The docker GNAT contains the Dockerfiles necessary to build a [GNATpro](https://www.adacore.com/gnatpro)
+x86-64 Linux docker image for use in CI or general dockerized context.
+
+The repository contains the Dockerfiles necessary to build two images:
+- gnatpro-deps is the basic image has the necessary elements to build the
+GNATpro toolsuite.
+- gnatpro is the image built from the gnatpro-deps image and using a user-provided
+GNATpro release.
+
+In order to get a GNATpro release, see [GNATpro versions](https://www.adacore.com/gnatpro/comparison).
+
+## Requirements
+
+* You must have a recent version of [Docker](https://docs.docker.com/get-started/#set-up-your-docker-environment).
+
+For the GNATpro image:
+
+* You must have a GNATpro release for linux 86-64
+    - in the `gnatpro` directory
+* The default expected name is `gnatpro-20.2-x86_64-linux-bin.tar.gz`
+    - another release version and name can be specified using the `doinstall` script
+    - ... or manually through the `gnat_release` [Docker build-time variable](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg)
+
+## Install
+
+Put the content of the GNATpro release as an archive to the current directory.
+
+The `doinstall` script will guide you through the steps to build the docker gnatpro 
+image.
+
+## Manual setup
+
+Manual setup can be needed if you have several images to build.
+
+Run the build and specify the GNATpro archive file name:
+`docker build --build-arg gnat_release=<release_archive_file> [-t <image_name>]`
+
+## Quick check
+
+Once you have created and tagged an image, you can check that GNAT is working properly
+by running a compilation of the examples.
+
+`docker run --entrypoint make -t <image name> -C /usr/gnat/share/examples/gnat RUN_DINERS=0`
+
+It should compile and run all the JGNAT examples, and finish on a successful error
+code.
+
+## Open a shell on the image
+
+`docker run --entrypoint bash -it <image_name>` will give you access to a console shell
+on the image.
+
+You can then disconnect by either entering Ctrl+D or the `exit` command.
