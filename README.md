@@ -32,7 +32,7 @@ Run `./doinstall --gnat-release=<release_file>`
 
 ### Known issue
 If you have an access rights error, run the script with sudo
-`sudo python3 doinstall`
+`sudo doinstall`
 
 ## Manual setup
 
