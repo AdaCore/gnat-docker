@@ -1,5 +1,7 @@
 FROM gnatpro:deps AS gnatpro-build-install
 ARG gnat_release=gnatpro-20.2-x86_64-linux-bin.tar.gz
+# could also remove examples if not for testing
+ARG remove="doc gnatstudio gps info man"
 
 # Install GNAT from local archive
 COPY ${gnat_release} /tmp/gnat-src.tar.gz
@@ -18,7 +20,10 @@ RUN set -xe \
     && cd gnat-src \
     && cp ../default_install default_install \
     && chmod +x default_install \
-    && ./default_install
+
+    && ./default_install \
+    && cd /usr/gnat/share \
+    && rm -rf ${remove}
 
 FROM gnatpro:deps
 COPY --from=gnatpro-build-install /usr/gnat /usr/gnat
