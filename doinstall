@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+import sys
+from pathlib import Path
+import subprocess
+import argparse
+
+ROOTDIR = Path(sys.argv[0]).parent
+
+def check_call(args):
+    args_str = [str(a) for a in args]
+    if global_args["verbose"]:
+        print(" ".join(args_str))
+    subprocess.check_call(args_str)
+
+def docker(*args):
+    check_call(["docker"] + list(args))
+
+def docker_build(image, directory, **build_args):
+    assert (directory / "Dockerfile").exists(), f"No dockerfile in {directory}"
+    build_arg_opt = []
+    for k, v in build_args.items():
+        build_arg_opt += ["--build-arg", f"{k}={v}"]
+    docker("build", *build_arg_opt,
+           "-t", image, directory)
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--verbose", "-v", action="store_true")
+    ap.add_argument("--gnat_version", default="20.2")
+    ap.add_argument("--gnat_release")
+    global_args = vars(ap.parse_args())
+    if not global_args["gnat_release"]:
+        global_args["gnat_release"] = \
+            f"gnatpro-{global_args['gnat_version']}-x86_64-linux-bin.tar.gz"
+
+    print("Docker for build dependencies: image gnatpro:deps")
+    docker_build("gnatpro:deps", ROOTDIR / "gnatpro-deps")
+
+    gnatpro_image_name = f"gnatpro:{global_args['gnat_version']}"
+    print(f"Docker for GNATpro: image {gnatpro_image_name}")
+    assert (ROOTDIR / "gnatpro" / global_args["gnat_release"]).exists(), \
+        f"GNATpro release {global_args['gnat_release']} could not be found"
+    docker_build(gnatpro_image_name, ROOTDIR / "gnatpro",
+                 gnat_release=global_args["gnat_release"])
+
+    print("GNATpro image build succesfully")
+    yn = input("Do you want to build and run the GNAT example ? [yN] ")
+    if yn.lower().startswith("y"):
+        docker("run",
+               "--entrypoint", "make",
+               "-t", gnatpro_image_name,
+               "-C", "/usr/gnat/share/examples/gnat",
+               "RUN_DINERS=0")
