@@ -31,7 +31,11 @@ Put the content of the GNATpro release as an archive in the `gnatpro/` directory
 Run `./doinstall --gnat-release=<release_file>`
 
 ### Known issue
-If you have an access rights error, run the script with sudo
+
+Under Linux or BSD, if you have an access rights error, add yourself to the docker
+group with `sudo group -aG docker $USER` then restart your session.
+
+or else run with sudo
 `sudo doinstall`
 
 ## Manual setup
