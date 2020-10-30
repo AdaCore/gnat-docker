@@ -20,7 +20,6 @@ RUN set -xe \
     && cd gnat-src \
     && cp ../default_install default_install \
     && chmod +x default_install \
-
     && ./default_install \
     && cd /usr/gnat/share \
     && rm -rf ${remove}
