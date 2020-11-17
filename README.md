@@ -8,7 +8,7 @@ The repository has the following directories:
 
 - `gnatpro-deps/` Dockerfile for a basic image used to build the GNAT Pro toolsuite.
 - `gnatpro/` Dockerfile for building a working compiler container, using a user-provided
-GNAT pro release package.
+GNAT Pro release package.
 
 In order to get a GNAT Pro release package, see [GNAT Pro versions](https://www.adacore.com/gnatpro/comparison).
 
