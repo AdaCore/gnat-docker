@@ -35,10 +35,10 @@ if __name__ == "__main__":
     ap.add_argument("--verbose", "-v", action="store_true",
                     help="Display commands as they are run")
     ap.add_argument("--gnat_version",
-                    help="GNATpro version number for automatic tagging and " +
+                    help="GNAT Pro version number for automatic tagging and " +
                          "archive search. Leave empty for the script to infer it.")
     ap.add_argument("gnat_release",
-                    help="GNATpro release package file",
+                    help="GNAT Pro release package file",
                     type=Path)
 
 
@@ -51,27 +51,27 @@ if __name__ == "__main__":
     if not gnat_version:
         # Infer version-number from archive name
         gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnat_release.stem).group(1)
-        print(f"Infered GNATpro version to be {gnat_version}, if this is not the case, " +
+        print(f"Infered GNAT Pro version to be {gnat_version}, if this is not the case, " +
                "use --gnat_version option")
 
     if not gnat_release.exists():
         # Lookup from gnatpro/ dir
         gnat_release = ROOTDIR / "gnatpro" / gnat_release
     assert gnat_release.exists(), \
-        f"GNATpro release {gnat_release} could not be found"
+        f"GNAT Pro release {gnat_release} could not be found"
 
     print("Docker for build dependencies: image gnatpro:deps")
     docker_build("gnatpro:deps", ROOTDIR / "gnatpro-deps")
 
     gnatpro_image_name = f"gnatpro:{gnat_version}"
-    print(f"Docker for GNATpro: image {gnatpro_image_name}")
+    print(f"Docker for GNAT Pro: image {gnatpro_image_name}")
 
     # first copy the file to the docker context
     shutil.copy(gnat_release.resolve(), GNATPRODIR)
     docker_build(gnatpro_image_name, GNATPRODIR,
                  gnat_release=gnat_release.name)
 
-    print("GNATpro image built succesfully")
+    print("GNAT Pro image built succesfully")
     print("You can open a shell on it with the command")
     print("docker run --entrypoint bash -it", gnatpro_image_name)
     print()
