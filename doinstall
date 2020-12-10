@@ -66,8 +66,9 @@ if __name__ == "__main__":
     gnatpro_image_name = f"gnatpro:{gnat_version}"
     print(f"Docker for GNAT Pro: image {gnatpro_image_name}")
 
-    # first copy the file to the docker context
-    shutil.copy(gnat_release.resolve(), GNATPRODIR)
+    if not (GNATPRODIR / gnat_release.name).exists():
+        # if necessary, copy the file to the docker context
+        shutil.copy(gnat_release.resolve(), GNATPRODIR)
     docker_build(gnatpro_image_name, GNATPRODIR,
                  gnat_release=gnat_release.name)
 
