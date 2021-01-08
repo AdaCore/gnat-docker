@@ -1,0 +1,2 @@
+# Force files to use LF for EOL for files used in Unix environments
+*.sh text eol=lf
