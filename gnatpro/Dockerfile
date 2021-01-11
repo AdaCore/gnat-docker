@@ -5,7 +5,7 @@ ARG remove="doc gnatstudio gps info man"
 
 # Install GNAT from local archive
 COPY ${gnat_release} /tmp/gnat-src.tar.gz
-COPY default_install /tmp/default_install
+COPY default_install.sh /tmp/default_install.sh
 RUN set -xe \
     && DEBIAN_FRONTEND=noninteractive apt-get update -y \
     && apt-get install --no-install-recommends -y \
@@ -18,9 +18,9 @@ RUN set -xe \
     && tar -xf gnat-src.tar.gz -C gnat-src/ \
         --strip-components 1 \
     && cd gnat-src \
-    && cp ../default_install default_install \
-    && chmod +x default_install \
-    && ./default_install \
+    && cp ../default_install.sh default_install.sh \
+    && chmod +x default_install.sh \
+    && ./default_install.sh \
     && cd /usr/gnat/share \
     && rm -rf ${remove}
 
