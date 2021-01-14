@@ -37,7 +37,7 @@ if __name__ == "__main__":
     ap.add_argument("--gnat_version",
                     help="GNAT Pro version number for automatic tagging and " +
                          "archive search. Leave empty for the script to infer it.")
-    ap.add_argument("gnat_release",
+    ap.add_argument("gnatpro_release",
                     help="GNAT Pro release package file",
                     type=Path)
 
@@ -46,19 +46,19 @@ if __name__ == "__main__":
     global_verbose = args.verbose
 
     gnat_version = args.gnat_version
-    gnat_release = args.gnat_release
+    gnatpro_release = args.gnatpro_release
 
     if not gnat_version:
         # Infer version-number from archive name
-        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnat_release.stem).group(1)
+        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnatpro_release.stem).group(1)
         print(f"Infered GNAT Pro version to be {gnat_version}, if this is not the case, " +
                "use --gnat_version option")
 
-    if not gnat_release.exists():
+    if not gnatpro_release.exists():
         # Lookup from gnatpro/ dir
-        gnat_release = ROOTDIR / "gnatpro" / gnat_release
-    assert gnat_release.exists(), \
-        f"GNAT Pro release {gnat_release} could not be found"
+        gnatpro_release = ROOTDIR / "gnatpro" / gnatpro_release
+    assert gnatpro_release.exists(), \
+        f"GNAT Pro release {gnatpro_release} could not be found"
 
     print("Docker for build dependencies: image gnatpro:deps")
     docker_build("gnatpro:deps", ROOTDIR / "gnatpro-deps")
@@ -66,11 +66,11 @@ if __name__ == "__main__":
     gnatpro_image_name = f"gnatpro:{gnat_version}"
     print(f"Docker for GNAT Pro: image {gnatpro_image_name}")
 
-    if not (GNATPRODIR / gnat_release.name).exists():
+    if not (GNATPRODIR / gnatpro_release.name).exists():
         # if necessary, copy the file to the docker context
-        shutil.copy(gnat_release.resolve(), GNATPRODIR)
+        shutil.copy(gnatpro_release.resolve(), GNATPRODIR)
     docker_build(gnatpro_image_name, GNATPRODIR,
-                 gnat_release=gnat_release.name)
+                 gnat_release=gnatpro_release.name)
 
     print("GNAT Pro image built succesfully")
     print("You can open a shell on it with the command")
