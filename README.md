@@ -21,7 +21,7 @@ for building the images under Windows or MacOS.
 For the GNAT Pro image:
 
 * Put linux x86-64 GNAT Pro release in the `gnatpro/` directory
-* Run the `doinstall` script (see below)
+* Run the `create_image` script (see below)
 
 ## Install
 
@@ -32,13 +32,13 @@ You will probably have access rights error, add yourself to the docker group wit
 then restart your session (this may require a full OS restart).
 
 or else run with sudo
-`sudo doinstall`
+`sudo create_image`
 
 ### Steps
 
 With `$gnat_release` as the GNAT Pro `.tar.gz` release filem and `$gnat_version` as the GNAT Pro
 version number.
-Run `./doinstall --gnat_version=$gnat_version $release_file`
+Run `./create_image --gnat_version=$gnat_version $release_file`
 NB: If you're unsure of the version number, let the argument empty for the script to infer it.
 
 This will build two images
