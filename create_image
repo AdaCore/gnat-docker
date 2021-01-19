@@ -72,7 +72,7 @@ if __name__ == "__main__":
     docker_build(gnatpro_image_name, GNATPRODIR,
                  gnat_release=gnatpro_release.name)
 
-    print("GNAT Pro image built succesfully")
+    print("GNAT Pro image built successfully")
     print("You can open a shell on it with the command")
     print("docker run --entrypoint bash -it", gnatpro_image_name)
     print()
