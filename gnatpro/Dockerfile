@@ -4,7 +4,7 @@ ARG gnat_release=gnatpro-20.2-x86_64-linux-bin.tar.gz
 ARG remove="doc gnatstudio gps info man"
 
 # Install GNAT from local archive
-COPY ${gnat_release} /tmp/gnat-src.tar.gz
+COPY ${gnat_release} /tmp/gnat_release.tar.gz
 COPY default_install.sh /tmp/default_install.sh
 RUN set -xe \
     && DEBIAN_FRONTEND=noninteractive apt-get update -y \
@@ -14,10 +14,10 @@ RUN set -xe \
     && apt-get purge --auto-remove \
     && apt-get clean \
     && cd /tmp \
-    && mkdir gnat-src \
-    && tar -xf gnat-src.tar.gz -C gnat-src/ \
+    && mkdir gnat_release \
+    && tar -xf gnat_release.tar.gz -C gnat_release/ \
         --strip-components 1 \
-    && cd gnat-src \
+    && cd gnat_release \
     && cp ../default_install.sh default_install.sh \
     && chmod +x default_install.sh \
     && ./default_install.sh \
