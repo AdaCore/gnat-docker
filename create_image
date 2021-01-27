@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     if not gnat_version:
         # Infer version-number from archive name
-        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnatpro_release.stem).group(1)
+        gnat_version = re.match(r'^gnatpro-(\d+.\d+\w?)-.*', gnatpro_release.stem).group(1)
         print(f"Infered GNAT Pro version to be {gnat_version}, if this is not the case, " +
                "use --gnat_version option")
 
