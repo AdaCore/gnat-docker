@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
+import subprocess
+import argparse
+import re
+import shutil
+
+ROOTDIR = Path(sys.argv[0]).parent
+GNATPRODIR = ROOTDIR / "gnatpro"
+
+global_verbose = False
+
+def check_call(args):
+    args_str = [str(a) for a in args]
+    if global_verbose:
+        print("\033[1m >", " ".join(args_str), "\033[0m")
+    try:
+        subprocess.check_call(args_str)
+    except subprocess.CalledProcessError as e:
+        sys.exit(1)
+
+def docker(*args):
+    check_call(["docker"] + list(args))
+
+def docker_build(image, directory, **build_args):
+    assert (directory / "Dockerfile").exists(), f"No dockerfile in {directory}"
+    build_arg_opt = []
+    for k, v in build_args.items():
+        build_arg_opt += ["--build-arg", f"{k}={v}"]
+    docker("build", *build_arg_opt, "-t", image, directory)
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--verbose", "-v", action="store_true",
+                    help="Display commands as they are run")
+    ap.add_argument("--gnat_version",
+                    help="GNAT Pro version number for automatic tagging and " +
+                         "archive search. Leave empty for the script to infer it.")
+    ap.add_argument("gnatpro_release",
+                    help="GNAT Pro release package file",
+                    type=Path)
+
+
+    args = ap.parse_args()
+    global_verbose = args.verbose
+
+    gnat_version = args.gnat_version
+    gnatpro_release = args.gnatpro_release
+
+    if not gnat_version:
+        # Infer version-number from archive name
+        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnatpro_release.stem).group(1)
+        print(f"Infered GNAT Pro version to be {gnat_version}, if this is not the case, " +
+               "use --gnat_version option")
+
+    if not gnatpro_release.exists():
+        # Lookup from gnatpro/ dir
+        gnatpro_release = ROOTDIR / "gnatpro" / gnatpro_release
+    assert gnatpro_release.exists(), \
+        f"GNAT Pro release {gnatpro_release} could not be found"
+
+    print("Docker for build dependencies: image gnatpro:deps")
+    docker_build("gnatpro:deps", ROOTDIR / "gnatpro-deps")
+
+    gnatpro_image_name = f"gnatpro:{gnat_version}"
+    print(f"Docker for GNAT Pro: image {gnatpro_image_name}")
+
+    if not (GNATPRODIR / gnatpro_release.name).exists():
+        # if necessary, copy the file to the docker context
+        shutil.copy(gnatpro_release.resolve(), GNATPRODIR)
+    docker_build(gnatpro_image_name, GNATPRODIR,
+                 gnat_release=gnatpro_release.name)
+
+    print("GNAT Pro image built successfully")
+    print("You can open a shell on it with the command")
+    print("docker run --entrypoint bash -it", gnatpro_image_name)
+    print()
+    yn = input("Do you want to build and run the GNAT example ? [yN] ")
+    if yn.lower().startswith("y"):
+        docker("run",
+               "--entrypoint", "make",
+               "-t", gnatpro_image_name,
+               "-C", "/usr/gnat/share/examples/gnat",
+               "RUN_DINERS=0")
