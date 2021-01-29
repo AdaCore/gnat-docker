@@ -11,17 +11,20 @@ GNATPRODIR = ROOTDIR / "gnatpro"
 
 global_verbose = False
 
+
 def check_call(args):
     args_str = [str(a) for a in args]
     if global_verbose:
         print("\033[1m >", " ".join(args_str), "\033[0m")
     try:
         subprocess.check_call(args_str)
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         sys.exit(1)
+
 
 def docker(*args):
     check_call(["docker"] + list(args))
+
 
 def docker_build(image, directory, **build_args):
     assert (directory / "Dockerfile").exists(), f"No dockerfile in {directory}"
@@ -29,6 +32,7 @@ def docker_build(image, directory, **build_args):
     for k, v in build_args.items():
         build_arg_opt += ["--build-arg", f"{k}={v}"]
     docker("build", *build_arg_opt, "-t", image, directory)
+
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -41,7 +45,6 @@ if __name__ == "__main__":
                     help="GNAT Pro release package file",
                     type=Path)
 
-
     args = ap.parse_args()
     global_verbose = args.verbose
 
@@ -50,9 +53,11 @@ if __name__ == "__main__":
 
     if not gnat_version:
         # Infer version-number from archive name
-        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*', gnatpro_release.stem).group(1)
-        print(f"Infered GNAT Pro version to be {gnat_version}, if this is not the case, " +
-               "use --gnat_version option")
+        gnat_version = re.match(r'^gnatpro-(\d+.\d+)-.*',
+                                gnatpro_release.stem).group(1)
+        print(f"Infered GNAT Pro version to be {gnat_version}, " +
+              "if this is not the case, " +
+              "use --gnat_version option")
 
     if not gnatpro_release.exists():
         # Lookup from gnatpro/ dir
