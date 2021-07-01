@@ -6,7 +6,7 @@ general dockerized context.
 
 The repository has the following directories:
 
-- `gnatpro-deps/` Dockerfile for a basic image used to build the GNAT Pro toolsuite.
+- `gnatpro-deps/` Dockerfile for a base image used to build the GNAT Pro toolsuite.
 - `gnatpro/` Dockerfile for building a working compiler container, using a user-provided
 GNAT Pro release package.
 
@@ -42,7 +42,7 @@ Run `./create_image --gnat_version=$gnat_version $release_file`
 NB: If you're unsure of the version number, let the argument empty for the script to infer it.
 
 This will build two images
-* `docker:deps` for package dependencies
+* `docker:deps` for package dependencies and minimal tooling
 * `docker:$gnat_version` for compilation, eg `docker:20.2`.
 
 You can then use the `docker:$gnat_version` image to spawn new containers for compilation.

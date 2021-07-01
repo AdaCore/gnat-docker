@@ -4,6 +4,7 @@ RUN set -xe \
     && DEBIAN_FRONTEND=noninteractive apt-get update -y \
     && apt-get install -y \
          --no-install-recommends \
+        vim \
         make \
         libc6-dev \
     && rm -rf /var/lib/apt/lists/* \
