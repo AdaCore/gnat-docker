@@ -34,6 +34,12 @@ then restart your session (this may require a full OS restart).
 or else run with sudo
 `sudo create_image`
 
+#### Performance Issues on macOS
+
+You can experiment performance issues on macOS. This is due to the way Docker is designed, since Docker engine, on macOS and Windows, needs a Linux Kernel, so it runs Docker into a Virtual Machine.
+
+In order to increase performance, notably for I/O disk, you have to use **VirtioFS** (Docker Desktop > Settings > General > Choose file sharing implementation for your containers). That way, bind mount performance will be increased. It is also recommended to use named volumes when it is possible.
+
 ### Steps
 
 With `$gnat_release` as the GNAT Pro `.tar.gz` release filem and `$gnat_version` as the GNAT Pro
